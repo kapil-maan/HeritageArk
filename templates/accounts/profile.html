@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ owner.username }}{% endblock %}
+{% block content %}
+<div class="profile-head">
+  {% if owner.profile.avatar %}
+    <img class="avatar" src="{{ owner.profile.avatar.url }}" alt="">
+  {% else %}
+    <div class="avatar">{{ owner.username|first|upper }}</div>
+  {% endif %}
+  <div>
+    <h1>{{ owner.username }}</h1>
+    <p class="muted">{{ owner.profile.bio|default:"No bio yet." }} · Joined {{ owner.date_joined|date:"M Y" }}</p>
+    {% if is_owner %}
+      <p class="small">
+        <a href="{% url 'accounts:settings' %}">Edit profile</a> ·
+        <a href="{% url 'accounts:password_change' %}">Change password</a> ·
+        <a href="{% url 'accounts:activity' %}">Recently viewed</a>
+      </p>
+    {% endif %}
+  </div>
+</div>
+
+<h2>Contributions ({{ artifacts|length }})</h2>
+{% if artifacts %}
+  <div class="grid">{% for artifact in artifacts %}{% include "partials/artifact_card.html" %}{% endfor %}</div>
+{% else %}
+  <p class="empty">Nothing here yet.{% if is_owner %} <a href="{% url 'artifacts:create' %}">Submit your first artifact</a>.{% endif %}</p>
+{% endif %}
+
+{% if is_owner %}
+  <h2>Liked artifacts</h2>
+  {% if liked %}
+    <div class="grid">{% for artifact in liked %}{% include "partials/artifact_card.html" %}{% endfor %}</div>
+  {% else %}<p class="muted">You have not liked anything yet.</p>{% endif %}
+{% endif %}
+
+<h2>Collections</h2>
+{% if collections %}
+  <ul>{% for c in collections %}<li><a href="{{ c.get_absolute_url }}">{{ c.title }}</a> {% if c.is_private %}<span class="muted">(private)</span>{% endif %} · {{ c.artifacts.count }} items</li>{% endfor %}</ul>
+{% else %}<p class="muted">No collections.</p>{% endif %}
+{% endblock %}

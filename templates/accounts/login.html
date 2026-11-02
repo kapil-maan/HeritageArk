@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="panel form-narrow">
+  <h1>Welcome back</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn" type="submit">Log in</button>
+  </form>
+  <p class="muted small">
+    New here? <a href="{% url 'accounts:signup' %}">Create an account</a> ·
+    <a href="{% url 'accounts:password_reset' %}">Forgot password?</a>
+  </p>
+</div>
+{% endblock %}

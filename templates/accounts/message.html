@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="panel form-narrow center">
+  <h1>{{ title }}</h1>
+  <p class="muted">{{ text }}</p>
+  {% if link %}<a class="btn" href="{% url link.1 %}">{{ link.0 }}</a>{% endif %}
+</div>
+{% endblock %}

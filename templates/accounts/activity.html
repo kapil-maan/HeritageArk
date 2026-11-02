@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Recently viewed{% endblock %}
+{% block content %}
+<h1>Recently viewed</h1>
+<p class="muted">Stored in your <strong>session</strong> (server side), only a session-id cookie lives in your browser.</p>
+{% if recent %}
+  <div class="grid">{% for artifact in recent %}{% include "partials/artifact_card.html" %}{% endfor %}</div>
+{% else %}
+  <p class="empty">Browse some artifacts and they will show up here.</p>
+{% endif %}
+{% endblock %}
