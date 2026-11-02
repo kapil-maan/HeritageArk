@@ -48,6 +48,12 @@ class CollectionTests(BaseTestCase):
         response = self.client.post(reverse("curation:add"), {"collection": collection.pk, "artifact": hidden.pk})
         self.assertEqual(response.status_code, 404)
 
+    def test_forged_collection_id_gives_404_not_500(self):
+        artifact = self.make_artifact()
+        self.login(self.bob)
+        response = self.client.post(reverse("curation:add"), {"collection": "abc", "artifact": artifact.pk})
+        self.assertEqual(response.status_code, 404)
+
     def test_deleting_collection_keeps_artifacts(self):
         artifact = self.make_artifact()
         collection = Collection.objects.create(title="Temp", owner=self.alice)

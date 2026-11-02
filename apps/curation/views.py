@@ -13,6 +13,8 @@ from .models import Collection
 
 
 def _own_collection_or_403(request, pk):
+    if not str(pk).isdigit():  # e.g. a forged form value such as "abc"
+        raise Http404("No such collection.")
     collection = get_object_or_404(Collection, pk=pk)
     if collection.owner_id != request.user.id:
         return collection, HttpResponseForbidden("This is not your collection.")
