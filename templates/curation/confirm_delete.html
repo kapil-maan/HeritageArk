@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Delete collection{% endblock %}
+{% block content %}
+<div class="panel form-narrow center">
+  <h1>Delete "{{ collection.title }}"?</h1>
+  <p class="muted">The artifacts inside are not deleted, only this collection.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger">Yes, delete</button>
+    <a class="btn btn-ghost" href="{{ collection.get_absolute_url }}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ collection.title }}{% endblock %}
+{% block content %}
+<div class="section-head">
+  <h1>{{ collection.title }}</h1>
+  {% if is_owner %}
+    <span>
+      <a class="btn btn-ghost btn-sm" href="{% url 'curation:edit' collection.pk %}">Edit</a>
+      <a class="btn btn-danger btn-sm" href="{% url 'curation:delete' collection.pk %}">Delete</a>
+    </span>
+  {% endif %}
+</div>
+<p class="muted">by <a href="{% url 'accounts:profile' collection.owner.username %}">{{ collection.owner.username }}</a>{% if collection.is_private %} · private{% endif %}</p>
+<p>{{ collection.description|linebreaksbr }}</p>
+
+{% if artifacts %}
+  <div class="grid">
+    {% for artifact in artifacts %}
+      {% include "partials/artifact_card.html" %}
+      {% if is_owner %}
+        <form method="post" action="{% url 'curation:remove' collection.pk artifact.pk %}" style="margin-top:-12px">
+          {% csrf_token %}<button class="btn btn-ghost btn-sm">Remove "{{ artifact.title|truncatechars:20 }}"</button>
+        </form>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="empty">This collection is empty. Open an artifact and use "Add to collection".</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Collections{% endblock %}
+{% block content %}
+<div class="section-head">
+  <h1>Collections</h1>
+  {% if user.is_authenticated %}<a class="btn" href="{% url 'curation:create' %}">+ New collection</a>{% endif %}
+</div>
+<p class="muted">Themed sets of artifacts curated by the community.</p>
+{% if collections %}
+  <div class="grid">
+    {% for c in collections %}
+      <article class="card"><div class="card-body">
+        <p class="chip-row"><span class="chip">{{ c.item_count }} item{{ c.item_count|pluralize }}</span>{% if c.is_private %}<span class="muted">private</span>{% endif %}</p>
+        <h3><a href="{{ c.get_absolute_url }}">{{ c.title }}</a></h3>
+        <p class="muted small">by {{ c.owner.username }}</p>
+        <p class="small">{{ c.description|truncatewords:18 }}</p>
+      </div></article>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="empty">No collections yet.</p>
+{% endif %}
+{% endblock %}
