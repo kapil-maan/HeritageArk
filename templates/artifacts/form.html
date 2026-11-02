@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="panel form-medium">
+  <h1>{{ title }}</h1>
+  <p class="muted small">New submissions are screened automatically. Borderline ones wait for a moderator.</p>
+  {# enctype is required for file uploads #}
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <button class="btn" type="submit">Save</button>
+    <a class="btn btn-ghost" href="javascript:history.back()">Cancel</a>
+  </form>
+</div>
+{% endblock %}

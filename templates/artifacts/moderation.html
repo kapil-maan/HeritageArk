@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Moderation{% endblock %}
+{% block content %}
+<h1>Moderation queue</h1>
+<p class="muted">Submissions the automatic screening could not decide on. {{ pending|length }} waiting.</p>
+
+{% for artifact in pending %}
+  <div class="panel" style="margin-bottom:16px">
+    <div class="detail" style="grid-template-columns: 220px 1fr; gap:20px">
+      <img class="detail-img" src="{{ artifact.image.url }}" alt="">
+      <div>
+        <h3><a href="{{ artifact.get_absolute_url }}">{{ artifact.title }}</a></h3>
+        <p class="muted small">{{ artifact.category }} · {{ artifact.era }} · {{ artifact.region }} · by {{ artifact.submitted_by.username }}</p>
+        <p>{{ artifact.description|truncatewords:50 }}</p>
+        <p class="small"><strong>Auto score {{ artifact.auto_score }}/100.</strong> {{ artifact.auto_reason }}</p>
+        <form method="post" action="{% url 'artifacts:moderate' artifact.pk %}">
+          {% csrf_token %}
+          <input type="text" name="note" placeholder="Note to contributor (required when rejecting)">
+          <div class="actions">
+            <button class="btn btn-ok" name="decision" value="approve">Approve</button>
+            <button class="btn btn-danger" name="decision" value="reject">Reject</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <p class="empty">All caught up. Nothing is waiting for review.</p>
+{% endfor %}
+
+<h2>Recent decisions</h2>
+<table class="table">
+  <tr><th>Artifact</th><th>Status</th><th>Decided by</th><th>Note</th></tr>
+  {% for a in recent %}
+    <tr>
+      <td><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></td>
+      <td>{{ a.get_status_display }}</td>
+      <td>{{ a.reviewed_by.username|default:"auto-screening" }}</td>
+      <td class="small">{{ a.review_note|default:"-"|truncatechars:80 }}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Preserving culture together{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Preserve the stories<br>that shaped us</h1>
+  <p>HeritageArc is a community archive where anyone can document cultural artifacts, build thematic collections and keep heritage alive.</p>
+  <a class="btn" href="{% url 'artifacts:explore' %}">Explore the archive</a>
+  {% if not user.is_authenticated %}<a class="btn btn-ghost" href="{% url 'accounts:signup' %}">Join the community</a>{% endif %}
+  <div class="stats">
+    <div class="stat"><strong>{{ stats.artifacts }}</strong><span class="muted">artifacts</span></div>
+    <div class="stat"><strong>{{ stats.contributors }}</strong><span class="muted">contributors</span></div>
+    <div class="stat"><strong>{{ stats.collections }}</strong><span class="muted">collections</span></div>
+  </div>
+</section>
+
+{% if popular %}
+<div class="section-head"><h2>Most loved</h2></div>
+<div class="grid">{% for artifact in popular %}{% include "partials/artifact_card.html" %}{% endfor %}</div>
+{% endif %}
+
+<div class="section-head"><h2>Recently added</h2><a href="{% url 'artifacts:explore' %}">See all →</a></div>
+{% if latest %}
+  <div class="grid">{% for artifact in latest %}{% include "partials/artifact_card.html" %}{% endfor %}</div>
+{% else %}
+  <p class="empty">The archive is empty. Be the first to <a href="{% url 'artifacts:create' %}">submit an artifact</a>.</p>
+{% endif %}
+{% endblock %}

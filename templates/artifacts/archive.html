@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Archive {{ year }}{% endblock %}
+{% block content %}
+<h1>Added in {{ year }}</h1>
+<p class="muted">This page is reached through a regular-expression URL: <code>/archive/{{ year }}/</code></p>
+{% if artifacts %}
+  <div class="grid">{% for artifact in artifacts %}{% include "partials/artifact_card.html" %}{% endfor %}</div>
+{% else %}
+  <p class="empty">Nothing was added in {{ year }}.</p>
+{% endif %}
+{% endblock %}

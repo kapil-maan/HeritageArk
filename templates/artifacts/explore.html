@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Explore{% endblock %}
+{% block content %}
+<h1>Explore the archive</h1>
+<form method="get" class="filters">
+  {{ form.q }} {{ form.category }} {{ form.sort }}
+  <button class="btn" type="submit">Search</button>
+  <a class="btn btn-ghost" href="{% url 'artifacts:explore' %}">Reset</a>
+</form>
+
+<p class="muted small">{{ page_obj.paginator.count }} artifact{{ page_obj.paginator.count|pluralize }} found</p>
+{% if page_obj %}
+  <div class="grid">{% for artifact in page_obj %}{% include "partials/artifact_card.html" %}{% endfor %}</div>
+  {% include "partials/pagination.html" %}
+{% else %}
+  <p class="empty">No artifacts match your search.</p>
+{% endif %}
+{% endblock %}

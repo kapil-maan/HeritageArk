@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ artifact.title }}{% endblock %}
+{% block content %}
+{% if not artifact.is_approved %}
+  <div class="notice {% if artifact.status == 'rejected' %}notice-rejected{% endif %}">
+    <strong>{{ artifact.get_status_display }}.</strong> Only you{% if perms.artifacts.can_moderate %} and moderators{% endif %} can see this page.
+    {% if artifact.review_note %}<br>Note: {{ artifact.review_note }}{% endif %}
+  </div>
+{% endif %}
+
+<div class="detail">
+  <img class="detail-img" src="{{ artifact.image.url }}" alt="{{ artifact.title }}">
+  <div>
+    <p class="chip-row"><span class="chip">{{ artifact.category.name }}</span></p>
+    <h1>{{ artifact.title }}</h1>
+    <dl class="meta-list">
+      <dt>Era</dt><dd>{{ artifact.era }}</dd>
+      <dt>Region</dt><dd>{{ artifact.region }}</dd>
+      <dt>Contributor</dt><dd><a href="{% url 'accounts:profile' artifact.submitted_by.username %}">{{ artifact.submitted_by.username }}</a></dd>
+      <dt>Added</dt><dd>{{ artifact.created_at|date:"j M Y" }} (<a href="{% url 'artifacts:archive' artifact.created_at|date:'Y' %}">{{ artifact.created_at|date:"Y" }} archive</a>)</dd>
+    </dl>
+    <p>{{ artifact.description|linebreaksbr }}</p>
+
+    <div class="actions">
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'artifacts:like' artifact.pk %}" class="inline">
+          {% csrf_token %}
+          <button class="btn {% if not liked %}btn-ghost{% endif %}">{% if liked %}♥ Liked{% else %}♡ Like{% endif %} · {{ artifact.likes.count }}</button>
+        </form>
+      {% else %}
+        <span class="muted">♥ {{ artifact.likes.count }} · <a href="{% url 'accounts:login' %}?next={{ request.path }}">log in</a> to like</span>
+      {% endif %}
+      {% if can_manage %}
+        <a class="btn btn-ghost" href="{% url 'artifacts:edit' artifact.pk %}">Edit</a>
+        <a class="btn btn-danger" href="{% url 'artifacts:delete' artifact.pk %}">Delete</a>
+      {% endif %}
+    </div>
+
+    {% if my_collections %}
+      <form method="post" action="{% url 'curation:add' %}" class="inline">
+        {% csrf_token %}
+        <input type="hidden" name="artifact" value="{{ artifact.pk }}">
+        <select name="collection" style="width:auto">{% for c in my_collections %}<option value="{{ c.pk }}">{{ c.title }}</option>{% endfor %}</select>
+        <button class="btn btn-ghost btn-sm">Add to collection</button>
+      </form>
+    {% elif user.is_authenticated %}
+      <p class="small muted"><a href="{% url 'curation:create' %}">Create a collection</a> to save this artifact.</p>
+    {% endif %}
+
+    {% if artifact.auto_score is not None and can_manage %}
+      <details class="small muted"><summary>Screening details (score {{ artifact.auto_score }}/100)</summary>{{ artifact.auto_reason }}</details>
+    {% endif %}
+  </div>
+</div>
+
+<h2>Comments ({{ comments|length }})</h2>
+{% for comment in comments %}
+  <div class="comment">
+    <strong>{{ comment.author.username }}</strong> <span class="muted small">{{ comment.created_at|timesince }} ago</span>
+    <p>{{ comment.text|linebreaksbr }}</p>
+    {% if user == comment.author or perms.artifacts.can_moderate %}
+      <form method="post" action="{% url 'artifacts:comment_delete' artifact.pk comment.pk %}" class="inline">
+        {% csrf_token %}<button class="btn btn-ghost btn-sm">Delete</button>
+      </form>
+    {% endif %}
+  </div>
+{% empty %}
+  <p class="muted">No comments yet.</p>
+{% endfor %}
+
+{% if user.is_authenticated and artifact.is_approved %}
+  <form method="post" action="{% url 'artifacts:comment' artifact.pk %}" class="panel form-medium" style="margin-top:16px">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" with form=comment_form %}
+    <button class="btn">Post comment</button>
+  </form>
+{% endif %}
+{% endblock %}

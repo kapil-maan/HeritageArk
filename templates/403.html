@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Forbidden{% endblock %}
+{% block content %}
+<div class="error-page">
+  <p class="code">403</p>
+  <h1>You do not have access to this</h1>
+  <p class="muted">This area needs a different permission.</p>
+  <a class="btn" href="{% url 'artifacts:home' %}">Back to home</a>
+</div>
+{% endblock %}

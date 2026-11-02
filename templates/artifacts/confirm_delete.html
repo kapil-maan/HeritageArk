@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Delete artifact{% endblock %}
+{% block content %}
+<div class="panel form-narrow center">
+  <h1>Delete this artifact?</h1>
+  <p>"{{ artifact.title }}" and its comments will be removed permanently.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger">Yes, delete</button>
+    <a class="btn btn-ghost" href="{{ artifact.get_absolute_url }}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

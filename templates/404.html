@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block content %}
+<div class="error-page">
+  <p class="code">404</p>
+  <h1>This page has gone missing</h1>
+  <p class="muted">Even archives lose things sometimes.</p>
+  <a class="btn" href="{% url 'artifacts:home' %}">Back to home</a>
+</div>
+{% endblock %}
