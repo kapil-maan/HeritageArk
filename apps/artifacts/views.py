@@ -1,7 +1,10 @@
 """Views for the artifacts app (Units II, III, IV, VI)."""
+from functools import wraps
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.http import Http404, HttpResponseForbidden
@@ -18,6 +21,18 @@ from .moderation import screen_artifact
 User = get_user_model()
 PAGE_SIZE = 12
 RECENT_LIMIT = 8
+
+
+def moderator_required(view):
+    """Anonymous -> go to login page. Logged in without permission -> 403."""
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect_to_login(request.get_full_path())
+        if not request.user.has_perm("artifacts.can_moderate"):
+            return HttpResponseForbidden("Moderators only.")
+        return view(request, *args, **kwargs)
+    return wrapper
 
 
 def can_manage(user, artifact):
@@ -201,7 +216,7 @@ def delete_comment(request, pk, comment_id):
 
 # ------------------------------------------------------------------ moderation
 
-@permission_required("artifacts.can_moderate", raise_exception=True)
+@moderator_required
 def moderation_queue(request):
     pending = Artifact.objects.pending().select_related("category", "submitted_by").order_by("created_at")
     recent = (Artifact.objects.exclude(status=Artifact.Status.PENDING)
@@ -209,7 +224,7 @@ def moderation_queue(request):
     return render(request, "artifacts/moderation.html", {"pending": pending, "recent": recent})
 
 
-@permission_required("artifacts.can_moderate", raise_exception=True)
+@moderator_required
 @require_POST
 def moderate(request, pk):
     artifact = get_object_or_404(Artifact, pk=pk)
