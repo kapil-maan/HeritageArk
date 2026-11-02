@@ -1,0 +1,12 @@
+<article class="card">
+  <a href="{{ artifact.get_absolute_url }}" class="card-img">
+    <img src="{{ artifact.image.url }}" alt="{{ artifact.title }}" loading="lazy">
+    {% if artifact.status != 'approved' %}<span class="status status-{{ artifact.status }}">{{ artifact.get_status_display }}</span>{% endif %}
+  </a>
+  <div class="card-body">
+    <p class="chip-row"><span class="chip">{{ artifact.category.name }}</span><span class="muted">{{ artifact.era }}</span></p>
+    <h3><a href="{{ artifact.get_absolute_url }}">{{ artifact.title }}</a></h3>
+    <p class="muted small">{{ artifact.region }}</p>
+    <p class="small">♥ {{ artifact.likes.count }} · 💬 {{ artifact.comments.count }}</p>
+  </div>
+</article>
